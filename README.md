@@ -6,21 +6,20 @@ It enables seamless ingestion of product inventory data from CSV files, stores v
 
 The architecture is fully serverless, scalable, and defined using Infrastructure as Code (IaC) with AWS CDK.
 
-**Architecture**
-
+## Architecture
 Store (CSV Upload)
-        │
-        ▼
+│
+▼
 S3 Bucket ──► Lambda (LoadInventory)
-                   │
-                   ▼
-              DynamoDB Table
-                   │
-                   ▼
-            DynamoDB Stream ──► Lambda (CheckInventory)
-                                      │
-                                      ▼
-                                  SNS Topic (Email Alerts)
+│
+▼
+DynamoDB Table
+│
+▼
+DynamoDB Stream ──► Lambda (CheckInventory)
+│
+▼
+SNS Topic (Email Alerts)
 
 **Features**
 
@@ -34,29 +33,30 @@ Notify subscribed users through Amazon SNS.
 
 Infrastructure defined entirely using AWS CDK (Python).
 
-**AWS Services Used**
+AWS Services Used
 
-**AWS Lambda** – Processes CSV data and checks inventory.
+AWS Lambda – Processes CSV data and checks inventory.
 
-**Amazon S3** – Stores uploaded inventory files.
+Amazon S3 – Stores uploaded inventory files.
 
-**Amazon DynamoDB** – Maintains inventory records.
+Amazon DynamoDB – Maintains inventory records.
 
-**Amazon SNS** – Sends notifications for zero-stock items.
+Amazon SNS – Sends notifications for zero-stock items.
 
-**AWS CDK (Python)** – Infrastructure as Code.
+AWS CDK (Python) – Infrastructure as Code.
 
-**Project Structure**
+
+## Project Structure
 serverless_inventory/
 │
 ├── lambdas/
-│   ├── load_inventory.py        # Lambda to load CSV data from S3 to DynamoDB
-│   └── check_inventory.py       # Lambda to check stock and trigger SNS
+│ ├── load_inventory.py # Lambda to load CSV data from S3 to DynamoDB
+│ └── check_inventory.py # Lambda to check stock and trigger SNS
 │
 ├── serverless_inventory_stack.py # Main CDK stack definition
-├── app.py                        # CDK app entry point
-├── requirements.txt              # Python dependencies
-└── README.md                     # Project documentation
+├── app.py # CDK app entry point
+├── requirements.txt # Python dependencies
+└── README.md # Project documentation
 
 **Setup and Deployment**
 1. Clone the Repository
