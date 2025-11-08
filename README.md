@@ -1,58 +1,106 @@
+**Serverless Inventory System (AWS CDK – Python)**
+Overview
 
-# Welcome to your CDK Python project!
+The Serverless Inventory System is an automated stock management solution built using AWS CDK (Python).
+It enables seamless ingestion of product inventory data from CSV files, stores valid records in DynamoDB, and sends notifications when stock levels reach zero.
 
-This is a blank project for CDK development with Python.
+The architecture is fully serverless, scalable, and defined using Infrastructure as Code (IaC) with AWS CDK.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+**Architecture**
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+Store (CSV Upload)
+        │
+        ▼
+S3 Bucket ──► Lambda (LoadInventory)
+                   │
+                   ▼
+              DynamoDB Table
+                   │
+                   ▼
+            DynamoDB Stream ──► Lambda (CheckInventory)
+                                      │
+                                      ▼
+                                  SNS Topic (Email Alerts)
 
-To manually create a virtualenv on MacOS and Linux:
+**Features**
 
-```
-$ python3 -m venv .venv
-```
+Upload inventory files (CSV format) directly to an S3 bucket.
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+Automatically load and store data in DynamoDB.
 
-```
-$ source .venv/bin/activate
-```
+Detect zero-stock items in real time.
 
-If you are a Windows platform, you would activate the virtualenv like this:
+Notify subscribed users through Amazon SNS.
 
-```
-% .venv\Scripts\activate.bat
-```
+Infrastructure defined entirely using AWS CDK (Python).
 
-Once the virtualenv is activated, you can install the required dependencies.
+**AWS Services Used**
 
-```
-$ pip install -r requirements.txt
-```
+**AWS Lambda** – Processes CSV data and checks inventory.
 
-At this point you can now synthesize the CloudFormation template for this code.
+**Amazon S3** – Stores uploaded inventory files.
 
-```
-$ cdk synth
-```
+**Amazon DynamoDB** – Maintains inventory records.
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+**Amazon SNS** – Sends notifications for zero-stock items.
 
-## Useful commands
+**AWS CDK (Python)** – Infrastructure as Code.
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+**Project Structure**
+serverless_inventory/
+│
+├── lambdas/
+│   ├── load_inventory.py        # Lambda to load CSV data from S3 to DynamoDB
+│   └── check_inventory.py       # Lambda to check stock and trigger SNS
+│
+├── serverless_inventory_stack.py # Main CDK stack definition
+├── app.py                        # CDK app entry point
+├── requirements.txt              # Python dependencies
+└── README.md                     # Project documentation
 
-Enjoy!
+**Setup and Deployment**
+1. Clone the Repository
+   
+2. Set Up a Virtual Environment
+   python3 -m venv .venv
+   source .venv/bin/activate
+
+3. Install Dependencies
+   pip install -r requirements.txt
+
+4. Bootstrap CDK (one-time setup per AWS account)
+   cdk bootstrap
+
+5. Deploy the Stack
+  cdk deploy
+
+6. Verify Deployment
+
+   S3 Bucket created for CSV uploads
+
+   DynamoDB Table created for inventory data
+
+   SNS Topic created for stock alerts
+
+   Two Lambda functions automatically connected to triggers
+
+**Example CSV Format**
+store,item,count
+Berlin,Amazon Tap,15
+Berlin,Echo Dot,12
+Berlin,Echo Plus,0
+Uploading a file like this to the S3 bucket will trigger automatic ingestion.
+If any item has a count of 0, an SNS email alert will be sent.
+
+**Notifications**
+
+SNS Topic Name: NoStock
+
+Subscribe via:
+
+Email (confirmation required)
+
+SMS or Lambda trigger (optional)
+
+**Author**
+Meenakshi Sharma
