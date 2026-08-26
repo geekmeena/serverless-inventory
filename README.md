@@ -1,106 +1,125 @@
-**Serverless Inventory System (AWS CDK – Python)**
-Overview
+# Serverless Inventory System
 
-The Serverless Inventory System is an automated stock management solution built using AWS CDK (Python).
-It enables seamless ingestion of product inventory data from CSV files, stores valid records in DynamoDB, and sends notifications when stock levels reach zero.
+A serverless inventory management project built with **AWS CDK and Python**.
 
-The architecture is fully serverless, scalable, and defined using Infrastructure as Code (IaC) with AWS CDK.
+The application processes inventory data uploaded as CSV files, stores inventory records in Amazon DynamoDB, and sends notifications when an item's stock reaches zero.
 
 ## Architecture
-Store (CSV Upload)
-│
-▼
-S3 Bucket ──► Lambda (LoadInventory)
-│
-▼
-DynamoDB Table
-│
-▼
-DynamoDB Stream ──► Lambda (CheckInventory)
-│
-▼
-SNS Topic (Email Alerts)
 
-**Features**
+```text
+CSV Upload
+    │
+    ▼
+Amazon S3
+    │
+    ▼
+Lambda - LoadInventory
+    │
+    ▼
+Amazon DynamoDB
+    │
+    ▼
+DynamoDB Stream
+    │
+    ▼
+Lambda - CheckInventory
+    │
+    ▼
+Amazon SNS
+    │
+    ▼
+Stock Alert
+```
 
-Upload inventory files (CSV format) directly to an S3 bucket.
+## How It Works
 
-Automatically load and store data in DynamoDB.
+1. An inventory CSV file is uploaded to an Amazon S3 bucket.
+2. S3 triggers the `LoadInventory` Lambda function.
+3. The Lambda function processes the CSV data and stores inventory records in DynamoDB.
+4. DynamoDB Streams capture changes to inventory records.
+5. The `CheckInventory` Lambda function checks updated stock levels.
+6. When an item's stock reaches zero, a notification is published to Amazon SNS.
 
-Detect zero-stock items in real time.
+## AWS Services
 
-Notify subscribed users through Amazon SNS.
-
-Infrastructure defined entirely using AWS CDK (Python).
-
-AWS Services Used
-
-AWS Lambda – Processes CSV data and checks inventory.
-
-Amazon S3 – Stores uploaded inventory files.
-
-Amazon DynamoDB – Maintains inventory records.
-
-Amazon SNS – Sends notifications for zero-stock items.
-
-AWS CDK (Python) – Infrastructure as Code.
-
+- **Amazon S3** – stores uploaded inventory CSV files
+- **AWS Lambda** – processes inventory data and checks stock levels
+- **Amazon DynamoDB** – stores inventory records
+- **DynamoDB Streams** – captures inventory record changes
+- **Amazon SNS** – publishes zero-stock notifications
+- **AWS CDK (Python)** – defines the infrastructure as code
 
 ## Project Structure
-serverless_inventory/
-│
-├── lambdas/
-│ ├── load_inventory.py # Lambda to load CSV data from S3 to DynamoDB
-│ └── check_inventory.py # Lambda to check stock and trigger SNS
-│
-├── serverless_inventory_stack.py # Main CDK stack definition
-├── app.py # CDK app entry point
-├── requirements.txt # Python dependencies
-└── README.md # Project documentation
 
-**Setup and Deployment**
-1. Clone the Repository
-   
-2. Set Up a Virtual Environment
-   python3 -m venv .venv
-   source .venv/bin/activate
+```text
+serverless-inventory/
+├── serverless_inventory/
+│   ├── lambdas/
+│   │   ├── load_inventory.py
+│   │   └── check_inventory.py
+│   └── serverless_inventory_stack.py
+├── tests/
+├── app.py
+├── cdk.json
+├── requirements.txt
+├── requirements-dev.txt
+├── .gitignore
+└── README.md
+```
 
-3. Install Dependencies
-   pip install -r requirements.txt
+## Local Setup
 
-4. Bootstrap CDK (one-time setup per AWS account)
-   cdk bootstrap
+### 1. Create a virtual environment
 
-5. Deploy the Stack
-  cdk deploy
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-6. Verify Deployment
+### 2. Install dependencies
 
-   S3 Bucket created for CSV uploads
+```bash
+pip install -r requirements.txt
+```
 
-   DynamoDB Table created for inventory data
+### 3. Bootstrap AWS CDK
 
-   SNS Topic created for stock alerts
+```bash
+cdk bootstrap
+```
 
-   Two Lambda functions automatically connected to triggers
+### 4. Review the generated infrastructure
 
-**Example CSV Format**
+```bash
+cdk synth
+```
+
+### 5. Deploy
+
+```bash
+cdk deploy
+```
+
+> Deployment creates AWS resources and may incur AWS charges.
+
+## Example Inventory Data
+
+```csv
 store,item,count
 Berlin,Amazon Tap,15
 Berlin,Echo Dot,12
 Berlin,Echo Plus,0
-Uploading a file like this to the S3 bucket will trigger automatic ingestion.
-If any item has a count of 0, an SNS email alert will be sent.
+```
 
-**Notifications**
+Uploading inventory data to the configured S3 bucket triggers the processing workflow. Inventory records are stored in DynamoDB and zero-stock items can trigger SNS notifications.
 
-SNS Topic Name: NoStock
+## Skills Demonstrated
 
-Subscribe via:
-
-Email (confirmation required)
-
-SMS or Lambda trigger (optional)
-
-**Author**
-Meenakshi Sharma
+- AWS serverless architecture
+- Infrastructure as Code with AWS CDK
+- Python
+- Event-driven architecture
+- AWS Lambda
+- Amazon S3
+- Amazon DynamoDB and DynamoDB Streams
+- Amazon SNS
